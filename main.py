@@ -6,7 +6,6 @@ from matplotlib.widgets import RadioButtons
 
 ## animations on or off?
 animations = True
-reset_animations_after_selection = False
 
 ## set global variables
 initial_scale = 1.0
@@ -64,9 +63,12 @@ def change_dist(event):
     if event == 'Uniform':
         current_plot=U
         current_color = unif_dist_color
-    update_wo_anim()
-    if (animations & reset_animations_after_selection):
-        a.frame_seq = a.new_frame_seq()
+
+    a.frame_seq = a.new_frame_seq() if animations else update_wo_anim()
+    # if (not animations):
+    #     update_wo_anim()
+    # if (animations):
+    #     a.frame_seq = a.new_frame_seq()
 
 
 def update(i):
@@ -103,7 +105,9 @@ def update(i):
         current_histogram.invert_xaxis()
     lower_right.annotate('n = {}'.format(i), [0,-4])
 
-
+if (animations):
+    a = animation.FuncAnimation(fig, update, interval=100, save_count=sample_size, repeat=True, frames=sample_size)
+    a
 def update_wo_anim():
     global N, E, G
     print(np.std(E))
@@ -127,7 +131,8 @@ def update_wo_anim():
     if (not current_histogram.xaxis_inverted()):
         current_histogram.invert_xaxis()
 
-    plt.draw()
+    if (not animations):
+        plt.draw()
 
 #radio buttons
 ax_std_dev = plt.axes([0.205,0.47,0.15,0.3])
@@ -146,10 +151,7 @@ distribution_type_button.on_clicked(lambda event: change_dist(event))
 distribution_type_button.set_active(0)
 std_dev_button.on_clicked(lambda event: set_standard_dev(event))
 std_dev_button.set_active(0)
-# Generate animations
-if (animations):
-    a = animation.FuncAnimation(fig, update, interval=100, save_count=sample_size, repeat=True, frames=sample_size)
-    a
+
 
 # Need this for running in PyCharm
 plt.show()
