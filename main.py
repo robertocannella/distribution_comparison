@@ -4,7 +4,8 @@ import matplotlib.gridspec as gridspec
 import numpy as np
 from matplotlib.widgets import RadioButtons
 
-
+## animations on or off?
+animations = False
 
 ## set global variables
 initial_scale = 1.0
@@ -53,7 +54,8 @@ def change_dist(event):
         current_plot=G
         current_color = gamm_dist_color
     update_wo_anim()
-    #a.frame_seq = a.new_frame_seq()
+    if (animations):
+        a.frame_seq = a.new_frame_seq()
 
 
 def update(i):
@@ -99,7 +101,6 @@ def update_wo_anim():
     top_bins = np.arange(0,1,0.025)
     current_bins = np.arange(-4,4,.20)
 
-
     #### top histogram
     top_histogram.hist(U, bins=top_bins, color='blue', alpha=0.6)
 
@@ -111,7 +112,10 @@ def update_wo_anim():
     if (not current_histogram.xaxis_inverted()):
         current_histogram.invert_xaxis()
 
+# Generate animations
+if (animations):
+    a = animation.FuncAnimation(fig, update, interval=100, save_count=sample_size, repeat=True, frames=sample_size)
+    a
 
-a = animation.FuncAnimation(fig, update, interval=100, save_count=sample_size, repeat=True, frames=sample_size)
-a
+# Need this for running in PyCharm
 plt.show()
