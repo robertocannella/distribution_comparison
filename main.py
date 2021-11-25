@@ -5,7 +5,8 @@ import numpy as np
 from matplotlib.widgets import RadioButtons
 
 ## animations on or off?
-animations = False
+animations = True
+reset_animations_after_selection = False
 
 ## set global variables
 initial_scale = 1.0
@@ -40,6 +41,7 @@ for key,spine in ax_distribution_type.spines.items():
     spine.set_visible(False)
 
 distribution_type_button.on_clicked(lambda event: change_dist(event))
+distribution_type_button.set_active(1)
 
 def change_dist(event):
     global current_plot
@@ -54,7 +56,7 @@ def change_dist(event):
         current_plot=G
         current_color = gamm_dist_color
     update_wo_anim()
-    if (animations):
+    if (animations & reset_animations_after_selection):
         a.frame_seq = a.new_frame_seq()
 
 
