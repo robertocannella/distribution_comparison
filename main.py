@@ -88,9 +88,10 @@ def update(i):
         current_histogram.invert_xaxis()
     lower_right.annotate('n = {}'.format(i), [0,-4])
 
+def set_standard_dev(event):
+    print(event)
 
 def update_wo_anim():
-    print(current_plot)
     #clear all existing frames
     top_histogram.cla()
     lower_right.cla()
@@ -114,17 +115,22 @@ def update_wo_anim():
     plt.draw()
 
 #radio buttons
-
-
+ax_std_dev = plt.axes([0.205,0.47,0.15,0.3])
+std_dev_button = RadioButtons(ax_std_dev, ['1.0','1.5','2.0','2.5'],active=0, activecolor='#ff10f0')
+ax_std_dev.set_title('Std. Dev.')
+for key,spine in ax_std_dev.spines.items():
+    spine.set_visible(False)
 
 ax_distribution_type = plt.axes([0.04,0.47,0.15,0.3])
 ax_distribution_type.set_title('Type')
-distribution_type_button = RadioButtons(ax_distribution_type, ['Normal','Gamma','Exponential','Uniform'],[True, True, True], activecolor='#ff10f0')
+distribution_type_button = RadioButtons(ax_distribution_type, ['Normal','Gamma','Exponential','Uniform'],active=0, activecolor='#ff10f0')
 for key,spine in ax_distribution_type.spines.items():
     spine.set_visible(False)
 
 distribution_type_button.on_clicked(lambda event: change_dist(event))
 distribution_type_button.set_active(0)
+std_dev_button.on_clicked(lambda event: set_standard_dev(event))
+std_dev_button.set_active(0)
 # Generate animations
 if (animations):
     a = animation.FuncAnimation(fig, update, interval=100, save_count=sample_size, repeat=True, frames=sample_size)
