@@ -5,7 +5,7 @@ import numpy as np
 from matplotlib.widgets import RadioButtons
 
 ## animations on or off?
-animations = False
+animations = True
 reset_animations_after_selection = False
 
 ## set global variables
@@ -31,13 +31,27 @@ E = np.random.exponential(scale=initial_scale, size=sample_size)
 U = np.random.random(size=sample_size)
 current_plot = N
 current_color = norm_dist_color
+current_plot_string = 'Normal'
 
+
+def set_standard_dev(event):
+    global N
+    global G
+    global E
+    global U
+    N = np.random.normal(0.0, scale=float(event), size=sample_size)
+    G = np.random.gamma(2, scale=float(event), size=sample_size)
+    E = np.random.exponential(scale=float(event), size=sample_size)
+    U = np.random.random(size=sample_size)
+    change_dist(current_plot_string)
 
 
 def change_dist(event):
     print(event)
     global current_plot
     global current_color
+    global current_plot_string
+    current_plot_string = event
     if event == 'Normal':
         current_plot=N
         current_color = norm_dist_color
@@ -56,6 +70,7 @@ def change_dist(event):
 
 
 def update(i):
+
     if i == movie_frame_size:
         a.repeat
     #clear all existing frames
@@ -88,10 +103,10 @@ def update(i):
         current_histogram.invert_xaxis()
     lower_right.annotate('n = {}'.format(i), [0,-4])
 
-def set_standard_dev(event):
-    print(event)
 
 def update_wo_anim():
+    global N, E, G
+    print(np.std(E))
     #clear all existing frames
     top_histogram.cla()
     lower_right.cla()
