@@ -15,10 +15,9 @@ movie_frame_size = 200
 norm_dist_color ='red'
 expo_dist_color ='green'
 gamm_dist_color ='orange'
+unif_dist_color ='blue'
 
-
-
-fig = plt.figure()
+fig = plt.figure(figsize=(7,5))
 gspec = gridspec.GridSpec(ncols=3, nrows=2)
 
 top_histogram = plt.subplot(gspec[0,1:])
@@ -48,6 +47,9 @@ def change_dist(event):
     if event == 'Gamma':
         current_plot=G
         current_color = gamm_dist_color
+    if event == 'Uniform':
+        current_plot=U
+        current_color = unif_dist_color
     update_wo_anim()
     if (animations & reset_animations_after_selection):
         a.frame_seq = a.new_frame_seq()
@@ -113,8 +115,11 @@ def update_wo_anim():
 
 #radio buttons
 
-ax_distribution_type = plt.axes([0.15,0.55,0.15,0.3])
-distribution_type_button = RadioButtons(ax_distribution_type, ['Normal','Gamma','Exponential'],[True, True, True], activecolor='#ff10f0')
+
+
+ax_distribution_type = plt.axes([0.04,0.47,0.15,0.3])
+ax_distribution_type.set_title('Type')
+distribution_type_button = RadioButtons(ax_distribution_type, ['Normal','Gamma','Exponential','Uniform'],[True, True, True], activecolor='#ff10f0')
 for key,spine in ax_distribution_type.spines.items():
     spine.set_visible(False)
 
