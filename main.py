@@ -5,7 +5,7 @@ import numpy as np
 from matplotlib.widgets import RadioButtons
 
 ## animations on or off?
-animations = True
+animations = False
 reset_animations_after_selection = False
 
 ## set global variables
@@ -33,17 +33,10 @@ U = np.random.random(size=sample_size)
 current_plot = N
 current_color = norm_dist_color
 
-#radio buttons
 
-ax_distribution_type = plt.axes([0.15,0.55,0.15,0.3])
-distribution_type_button = RadioButtons(ax_distribution_type, ['Normal','Gamma','Exponential'], [True,False,False], activecolor='#ff10f0')
-for key,spine in ax_distribution_type.spines.items():
-    spine.set_visible(False)
-
-distribution_type_button.on_clicked(lambda event: change_dist(event))
-distribution_type_button.set_active(1)
 
 def change_dist(event):
+    print(event)
     global current_plot
     global current_color
     if event == 'Normal':
@@ -93,7 +86,9 @@ def update(i):
         current_histogram.invert_xaxis()
     lower_right.annotate('n = {}'.format(i), [0,-4])
 
+
 def update_wo_anim():
+    print(current_plot)
     #clear all existing frames
     top_histogram.cla()
     lower_right.cla()
@@ -114,6 +109,17 @@ def update_wo_anim():
     if (not current_histogram.xaxis_inverted()):
         current_histogram.invert_xaxis()
 
+    plt.draw()
+
+#radio buttons
+
+ax_distribution_type = plt.axes([0.15,0.55,0.15,0.3])
+distribution_type_button = RadioButtons(ax_distribution_type, ['Normal','Gamma','Exponential'],[True, True, True], activecolor='#ff10f0')
+for key,spine in ax_distribution_type.spines.items():
+    spine.set_visible(False)
+
+distribution_type_button.on_clicked(lambda event: change_dist(event))
+distribution_type_button.set_active(0)
 # Generate animations
 if (animations):
     a = animation.FuncAnimation(fig, update, interval=100, save_count=sample_size, repeat=True, frames=sample_size)
