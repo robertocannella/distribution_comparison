@@ -1,3 +1,4 @@
+import matplotlib.backend_bases
 import matplotlib.pyplot as plt
 import matplotlib.animation as animation
 import matplotlib.gridspec as gridspec
@@ -17,6 +18,7 @@ gamm_dist_color ='orange'
 unif_dist_color ='blue'
 
 fig = plt.figure(figsize=(7,5))
+fig.suptitle('Compare probability distribution types', fontsize=16)
 gspec = gridspec.GridSpec(ncols=3, nrows=2)
 
 top_histogram = plt.subplot(gspec[0,1:])
@@ -44,12 +46,12 @@ def set_standard_dev(event):
     U = np.random.random(size=sample_size)
     change_dist(current_plot_string)
 
-
 def change_dist(event):
-    print(event)
+    global animations
     global current_plot
     global current_color
     global current_plot_string
+
     current_plot_string = event
     if event == 'Normal':
         current_plot=N
@@ -64,12 +66,10 @@ def change_dist(event):
         current_plot=U
         current_color = unif_dist_color
 
-    a.frame_seq = a.new_frame_seq() if animations else update_wo_anim()
-    # if (not animations):
-    #     update_wo_anim()
-    # if (animations):
-    #     a.frame_seq = a.new_frame_seq()
-
+    if (not animations):
+        update_wo_anim()
+    if (animations):
+        a.frame_seq = a.new_frame_seq()
 
 def update(i):
 
@@ -94,23 +94,23 @@ def update(i):
     #### top histogram
     top_histogram.hist(U[:i], bins=top_bins, color='blue', alpha=0.6)
     top_histogram.set_ylim(0, uniform_height)
+    top_histogram.set_xlabel('Uniform')
+    top_histogram.xaxis.set_label_position('top')
 
     #### lower right histogram
     lower_right.scatter(U[:i], current_plot[:i])
+    lower_right.set_xlabel('Intersection')
 
     #### lower left (CURRENT) histogram
     current_histogram.hist(current_plot[:i], bins=current_bins, orientation='horizontal', color=current_color, alpha=0.6)
     current_histogram.set_xlim(0, current_height)
+    current_histogram.set_xlabel(current_plot_string)
     if (not current_histogram.xaxis_inverted()):
         current_histogram.invert_xaxis()
     lower_right.annotate('n = {}'.format(i), [0,-4])
 
-if (animations):
-    a = animation.FuncAnimation(fig, update, interval=100, save_count=sample_size, repeat=True, frames=sample_size)
-    a
 def update_wo_anim():
     global N, E, G
-    print(np.std(E))
     #clear all existing frames
     top_histogram.cla()
     lower_right.cla()
@@ -123,11 +123,16 @@ def update_wo_anim():
     #### top histogram
     top_histogram.hist(U, bins=top_bins, color='blue', alpha=0.6)
 
+    top_histogram.set_xlabel('Uniform')
+    top_histogram.xaxis.set_label_position('top')
+
     #### lower right histogram
     lower_right.scatter(U, current_plot)
+    lower_right.set_xlabel('Intersection')
 
     #### lower left (CURRENT) histogram
     current_histogram.hist(current_plot, bins=current_bins, orientation='horizontal', color=current_color, alpha=0.6)
+    current_histogram.set_xlabel(current_plot_string)
     if (not current_histogram.xaxis_inverted()):
         current_histogram.invert_xaxis()
 
@@ -137,7 +142,7 @@ def update_wo_anim():
 #radio buttons
 ax_std_dev = plt.axes([0.205,0.47,0.15,0.3])
 std_dev_button = RadioButtons(ax_std_dev, ['1.0','1.5','2.0','2.5'],active=0, activecolor='#ff10f0')
-ax_std_dev.set_title('Std. Dev.')
+ax_std_dev.set_title('Scale')
 for key,spine in ax_std_dev.spines.items():
     spine.set_visible(False)
 
@@ -147,11 +152,16 @@ distribution_type_button = RadioButtons(ax_distribution_type, ['Normal','Gamma',
 for key,spine in ax_distribution_type.spines.items():
     spine.set_visible(False)
 
+# display interactive content
 distribution_type_button.on_clicked(lambda event: change_dist(event))
 distribution_type_button.set_active(0)
 std_dev_button.on_clicked(lambda event: set_standard_dev(event))
 std_dev_button.set_active(0)
 
+
+if (animations):
+    a = animation.FuncAnimation(fig, update, interval=100, save_count=sample_size, repeat=True, frames=sample_size)
+    a
 
 # Need this for running in PyCharm
 plt.show()
